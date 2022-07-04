@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do</title>
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <style>
+        .striked{
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center mt-3 shadow p-3 mb-5 bg-body rounded">
+        <h1>To Do List</h1>
+    </div>
+    <div class="container shadow p-3 mb-5 bg-body rounded text-center">
+        <div class="d-md-flex">
+            <input type="text" class="form-control" placeholder="write task" id="todo" style="flex: 0.8;">
+            <button onclick="addTodo()" id="btn" class="btn btn-outline-dark" style="flex:0.2 ;">add task</button>
+        </div>
+        <div id="edit" style="display: none;" class="">
+            <div class="d-md-flex mt-4">
+                <input type="text" class="form-control" placeholder="edit task" id="editToDo" style="flex: 0.8;">
+            <button onclick="editToDo()" id="btn" class="btn btn-outline-dark" style="flex:0.2;">edit task</button>
+            </div>
+            
+        </div>
+    
+    </div>
+    
+
+  
+    <div class="container">
+        <div id="tasks" class="text-center shadow p-3 mb-5 bg-body rounded">
+        
+        </div>
+    </div>
+
+    
+    <script>
+
+        // for object we use JSON.stringify(list) to put item in local storage
+
+        //JSON.parse(string)
+        
+        let list = [];
+        let counter=0;
+        var editID=-1
+
+
+        function editToDo(){
+            var todo = document.getElementById("editToDo").value;
+
+             list = list.map(listItem => {
+                if(listItem.id === editID){
+                    listItem.todo = todo;
+                }
+                return listItem;
+            })
+
+            showToDo();
+            editID=-1;
+            document.getElementById("editToDo").value = "";
+            document.getElementById("edit").style.display="none";
+        }
+
+        function editTask(id){
+            
+            var editToDo = document.getElementById("editToDo");
+            document.getElementById("edit").style.display="block"
+            var todo = list.filter(t => t.id===id);
+            // list = list.map(listItem => {
+            //     if(listItem.id === id){
+            //         todo = listItem.todo;
+            //     }
+            //     return listItem;
+            // })
+           
+            editToDo.value = todo[0].todo;
+            editID = id;
+        }
+
+        function striked(id){
+            list = list.map(listItem => {
+                if(listItem.id === id){
+                    listItem.status = !listItem.status
+                }
+                return listItem;
+            })
+            
+            showToDo();
+        }
+
+        function deleteTask(id){
+            list=list.filter(listItem => listItem.id!= id);
+            showToDo();
+        }
+
+        function showToDo(){
+            var tasks = document.getElementById("tasks");
+            tasks.innerHTML=``;
+            list.forEach(listItem => {
+
+                if(listItem.status===true){
+                    tasks.innerHTML+=`<div id="task_${listItem.id}" class=" d-flex justify-content-around align-items-center"> <input type="checkbox" checked="true"  onchange="striked(${listItem.id})"><h3 class="striked"> ${listItem.todo}</h3><a href="#" onclick="deleteTask(${listItem.id}) "class='btn btn-outline-warning'>Delete</a><a href="#" onclick="editTask(${listItem.id}) "class='btn btn-outline-info'>edit</a></div>`
+                }else{
+                    tasks.innerHTML+=`<div id="task_${listItem.id}" class="d-flex justify-content-around align-items-center"> <input type="checkbox" onchange="striked(${listItem.id})"><h3> ${listItem.todo}</h3><a href="#" onclick="deleteTask(${listItem.id})" class='btn btn-outline-warning'>Delete</a><a href="#" onclick="editTask(${listItem.id})" class='btn btn-outline-info'>edit</a></div>`
+                }
+                
+            })
+        }
+
+        function addTodo(){
+           
+            var todo = document.getElementById('todo').value;
+
+            if(todo != ""){
+                list.push({
+                id : counter+1,
+                todo : todo,
+                status : false,
+            });
+            counter++;
+            showToDo();
+            }else{
+                alert("add item to list!")
+            }
+            
+           
+            
+            
+            document.getElementById('todo').value=""
+        }
+    </script>
+</body>
+</html>
